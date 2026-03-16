@@ -1,0 +1,124 @@
+classDiagram
+class IMenuService {
+    <<interface>>
+    +GetMenu(DateTimeOffset) Menu
+}
+class IOrderingService {
+    <<interface>>
+    +HandlePizzaOrder(PizzaOrder) Task~IEnumerable~Pizza~~
+}
+class IStockService {
+    <<interface>>
+    +HasInsufficientStock(PizzaOrder, ComparableList~PizzaRecipeDto~) Task~bool~
+    +GetStock(PizzaOrder, ComparableList~PizzaRecipeDto~) Task~ComparableList~StockDto~~
+}
+class IRecipeService {
+    <<interface>>
+    +GetPizzaRecipes(PizzaOrder) Task~ComparableList~PizzaRecipeDto~~
+}
+class IPizzaOven {
+    <<interface>>
+    +PreparePizzas(ComparableList~PizzaPrepareOrder~, ComparableList~StockDto~) Task~IEnumerable~Pizza~~
+}
+class IStockRepository {
+    <<interface>>
+    +AddToStock(StockDto) Task~StockDto~
+    +GetStock(StockType) Task~StockDto~
+    +TakeStock(StockType, int) Task~StockDto~
+}
+class IRecipeRepository {
+    <<interface>>
+    +AddRecipe(PizzaRecipeDto) Task~long~
+    +GetRecipe(PizzaRecipeType) Task~PizzaRecipeDto~
+}
+
+IMenuService <|.. MenuService
+IOrderingService <|.. OrderingService
+IStockService <|.. StockService
+IRecipeService <|.. RecipeService
+IPizzaOven <|.. PizzaOven
+IStockRepository <|.. StockRepository
+IRecipeRepository <|.. RecipeRepository
+
+class MenuService
+class OrderingService {
+    -IStockService stockService
+    -IRecipeService recipeService
+    -IPizzaOven pizzaOven
+}
+class StockService
+class RecipeService
+
+OrderingService --> IStockService
+OrderingService --> IRecipeService
+OrderingService --> IPizzaOven
+StockService --> IStockRepository
+RecipeService --> IRecipeRepository
+
+class PizzaOven {
+    <<abstract>>
+    #Capacity int
+    +PreparePizzas(ComparableList~PizzaPrepareOrder~, ComparableList~StockDto~) Task~IEnumerable~Pizza~~
+}
+class NormalPizzaOven {
+    #Capacity = 1
+}
+class GiantRevolvingPizzaOven {
+    #Capacity = 5
+}
+class AssemblyLinePizzaOven {
+    #Capacity = 10
+}
+
+PizzaOven <|-- NormalPizzaOven
+PizzaOven <|-- GiantRevolvingPizzaOven
+PizzaOven <|-- AssemblyLinePizzaOven
+
+class Pizza {
+    <<abstract>>
+    +Type PizzaRecipeType
+}
+class StandardPizza
+class ExtremelyTastyPizza
+
+Pizza <|-- StandardPizza
+Pizza <|-- ExtremelyTastyPizza
+
+class PizzaOrder {
+    +RequestedOrder ComparableList~PizzaAmount~
+}
+class PizzaAmount {
+    +PizzaType PizzaRecipeType
+    +Amount int
+}
+class PizzaRecipeDto {
+    +RecipeType PizzaRecipeType
+    +Ingredients ComparableList~StockDto~
+    +CookingTimeMinutes int
+}
+class StockDto {
+    +StockType StockType
+    +Amount int
+}
+class Menu {
+    +Title string
+    +Items ComparableList~MenuItem~
+}
+class MenuItem {
+    +PizzaType PizzaRecipeType
+    +Price decimal
+}
+
+PizzaOrder *-- PizzaAmount
+PizzaRecipeDto *-- StockDto
+Menu *-- MenuItem
+
+class OrderingController {
+    -IOrderingService orderingService
+}
+class MenuController
+class RestockingController
+
+OrderingController --> IOrderingService
+MenuController --> IMenuService
+RestockingController --> IStockService

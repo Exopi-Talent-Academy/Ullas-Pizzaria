@@ -1,0 +1,103 @@
+@startuml
+interface IMenuService {
+    +GetMenu(DateTimeOffset): Menu
+}
+interface IOrderingService {
+    +HandlePizzaOrder(PizzaOrder): Task<IEnumerable<Pizza>>
+}
+interface IStockService {
+    +HasInsufficientStock(PizzaOrder, ComparableList<PizzaRecipeDto>): Task<bool>
+    +GetStock(PizzaOrder, ComparableList<PizzaRecipeDto>): Task<ComparableList<StockDto>>
+}
+interface IRecipeService {
+    +GetPizzaRecipes(PizzaOrder): Task<ComparableList<PizzaRecipeDto>>
+}
+interface IPizzaOven {
+    +PreparePizzas(ComparableList<PizzaPrepareOrder>, ComparableList<StockDto>): Task<IEnumerable<Pizza>>
+}
+interface IStockRepository {
+    +AddToStock(StockDto): Task<StockDto>
+    +GetStock(StockType): Task<StockDto>
+    +TakeStock(StockType, int): Task<StockDto>
+}
+interface IRecipeRepository {
+    +AddRecipe(PizzaRecipeDto): Task<long>
+    +GetRecipe(PizzaRecipeType): Task<PizzaRecipeDto>
+}
+
+class MenuService implements IMenuService
+class OrderingService implements IOrderingService {
+    -IStockService stockService
+    -IRecipeService recipeService
+    -IPizzaOven pizzaOven
+}
+class StockService implements IStockService {
+    -IStockRepository stockRepository
+}
+class RecipeService implements IRecipeService {
+    -IRecipeRepository recipeRepository
+}
+
+OrderingService --> IStockService
+OrderingService --> IRecipeService
+OrderingService --> IPizzaOven
+StockService --> IStockRepository
+RecipeService --> IRecipeRepository
+
+abstract class PizzaOven implements IPizzaOven {
+    #Capacity: int
+}
+class NormalPizzaOven extends PizzaOven
+class GiantRevolvingPizzaOven extends PizzaOven
+class AssemblyLinePizzaOven extends PizzaOven
+
+abstract class Pizza {
+    +Type: PizzaRecipeType
+}
+class StandardPizza extends Pizza
+class ExtremelyTastyPizza extends Pizza
+
+class PizzaOrder {
+    +RequestedOrder: ComparableList<PizzaAmount>
+}
+class PizzaAmount {
+    +PizzaType: PizzaRecipeType
+    +Amount: int
+}
+class PizzaRecipeDto {
+    +RecipeType: PizzaRecipeType
+    +Ingredients: ComparableList<StockDto>
+    +CookingTimeMinutes: int
+}
+class StockDto {
+    +StockType: StockType
+    +Amount: int
+}
+class Menu {
+    +Title: string
+    +Items: ComparableList<MenuItem>
+}
+class MenuItem {
+    +PizzaType: PizzaRecipeType
+    +Price: decimal
+}
+
+PizzaOrder *-- PizzaAmount
+PizzaRecipeDto *-- StockDto
+Menu *-- MenuItem
+
+class OrderingController {
+    -IOrderingService orderingService
+}
+class MenuController {
+    -IMenuService menuService
+}
+class RestockingController {
+    -IStockService stockService
+}
+
+OrderingController --> IOrderingService
+MenuController --> IMenuService
+RestockingController --> IStockService
+
+@enduml

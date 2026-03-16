@@ -2,9 +2,10 @@
 
 public class MenuService : IMenuService
 {
+    MenuOrchestrator _menuOrchestrator = new MenuOrchestrator();
     public Menu GetMenu(DateTimeOffset menuDate)
     {
-        throw new NotImplementedException("No menu has been implemented yet.");
+        return _menuOrchestrator.ChooseMenuTitle(menuDate.Hour, menuDate.Minute);
     }
 }
  
