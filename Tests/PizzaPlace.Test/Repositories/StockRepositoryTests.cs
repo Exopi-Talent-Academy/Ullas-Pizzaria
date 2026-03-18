@@ -66,7 +66,7 @@ public class StockRepositoryTests
         var repository = GetStockRepository();
 
         // Act
-        var actual = await repository.GetStock(stockType);
+        var actual = await repository.GetStockDto(stockType);
 
         // Assert
         Assert.AreEqual(stockType, actual.StockType);
@@ -80,12 +80,12 @@ public class StockRepositoryTests
         var stockType = StockType.GenericSpices;
         var repository = GetStockRepository();
         await repository.AddToStock(new StockDto(stockType, 123)); // Ensure the stock type is added.
-        var startStock = await repository.GetStock(stockType);
+        var startStock = await repository.GetStockDto(stockType);
         var expected = startStock with { Amount = startStock.Amount + addedAmount };
 
         // Act
         await repository.AddToStock(new StockDto(stockType, addedAmount));
-        var actual = await repository.GetStock(stockType);
+        var actual = await repository.GetStockDto(stockType);
 
         // Assert
         Assert.AreEqual(expected, actual);
@@ -132,7 +132,7 @@ public class StockRepositoryTests
         var stockType = StockType.FermentedDough;
         var repository = GetStockRepository();
         await repository.AddToStock(new StockDto(stockType, 5)); // Ensure stock is present.
-        var startStock = await repository.GetStock(stockType);
+        var startStock = await repository.GetStockDto(stockType);
         var amount = startStock.Amount + 1;
 
         // Act
@@ -150,12 +150,12 @@ public class StockRepositoryTests
         var amount = 7;
         var repository = GetStockRepository();
         await repository.AddToStock(new StockDto(stockType, amount + 8)); // Ensure stock is present.
-        var startStock = await repository.GetStock(stockType);
+        var startStock = await repository.GetStockDto(stockType);
         var expected = startStock with { Amount = startStock.Amount - amount };
 
         // Act
         await repository.TakeStock(stockType, amount);
-        var actual = await repository.GetStock(stockType);
+        var actual = await repository.GetStockDto(stockType);
 
         // Assert
         Assert.AreEqual(expected, actual);

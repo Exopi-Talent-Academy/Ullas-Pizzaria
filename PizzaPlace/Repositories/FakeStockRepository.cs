@@ -7,6 +7,10 @@ public class FakeStockRepository : FakeDatabase<StockDto>, IStockRepository
 {
     private static readonly object _lock = new();
 
+    public Task<ComparableList<StockDto>> GetAllStock() 
+    {
+        return Task.FromResult(Get(_ => true).ToComparableList());
+    }
     public Task<StockDto> AddToStock(StockDto stock)
     {
         if (stock.Amount < 0)
@@ -30,7 +34,7 @@ public class FakeStockRepository : FakeDatabase<StockDto>, IStockRepository
         }
     }
 
-    public Task<StockDto> GetStock(StockType stockType) =>
+    public Task<StockDto> GetStockDto(StockType stockType) =>
         Task.FromResult(Get(x => x.StockType == stockType)
             .FirstOrDefault(new StockDto(stockType, 0)));
 
@@ -41,7 +45,7 @@ public class FakeStockRepository : FakeDatabase<StockDto>, IStockRepository
 
         lock (_lock)
         {
-            var stock = GetStock(stockType).GetAwaiter().GetResult();
+            var stock = GetStockDto(stockType).GetAwaiter().GetResult();
             if (stock.Amount < amount)
                 throw new PizzaException("Not enough stock to take the given amount.");
 

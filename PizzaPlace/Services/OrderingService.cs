@@ -16,7 +16,7 @@ public class OrderingService(
         if (await stockService.HasInsufficientStock(order, recipes))
             throw new PizzaException("Unable to take in order. Insufficient stock.");
 
-        var stock = await stockService.GetStock(order, recipes);
+        var stock = await stockService.CalculateRequiredStock(order, recipes);
 
         var prepareOrder = order.RequestedOrder
             .GroupBy(x => x.PizzaType)

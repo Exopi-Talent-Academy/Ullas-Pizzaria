@@ -6,26 +6,46 @@ namespace PizzaPlace.Services;
 public class StockService(IStockRepository stockRepository, IRecipeService recipeService) : IStockService
 {
     private async Task<ComparableList<PizzaRecipeDto>> GetrecipeDtos(PizzaOrder order) => await recipeService.GetPizzaRecipes(order);
-    public Task<bool> HasInsufficientStock(PizzaOrder order, ComparableList<PizzaRecipeDto> recipeDtos)
+    public async Task<bool> HasInsufficientStock(PizzaOrder order, ComparableList<PizzaRecipeDto> recipeDtos)
     {
-        throw new NotImplementedException("Sufficient stock must be checked.");
+        bool result = false;    
+        var requiredStock = await CalculateRequiredStock(order, recipeDtos);
+        var allStock = await GetAllStock();
+        foreach (var required in requiredStock)
+        {
+            foreach (var allItem in allStock)
+            {
+                if (required.StockType == allItem.StockType)
+                {
+                    var comparison = allItem.Amount - required.Amount;
+                    result = comparison < 0 ? false : true;
+                    if (result == false)
+                        break;
+                }
+            }
+        } return result;
     }
 
-    public async Task<ComparableList<StockDto>> GetStock(PizzaOrder order, ComparableList<PizzaRecipeDto> recipeDtos)
+    public async Task<ComparableList<StockDto>> GetAllStock() 
     {
-        ComparableList<(PizzaRecipeDto type, int pizzaAmount)> recipeTypeAndAmountsInOrder = new ComparableList<(PizzaRecipeDto type, int pizzaAmount)>();
+        return await stockRepository.GetAllStock();
+    }
+
+    public async Task<ComparableList<StockDto>> CalculateRequiredStock(PizzaOrder order, ComparableList<PizzaRecipeDto> recipeDtos)
+    {
+        ComparableList<(PizzaRecipeDto type, int pizzaAmount)> recipeTypeAndAmountsForOrder = new ComparableList<(PizzaRecipeDto type, int pizzaAmount)>();
          
         foreach (var orderItem in order.RequestedOrder)
         {
             var recipeDtoForPizzaType= recipeDtos.FirstOrDefault(rDto => rDto.RecipeType == orderItem.PizzaType);
             var pizzaAmont = orderItem.Amount;
 
-            recipeTypeAndAmountsInOrder.Add((recipeDtoForPizzaType, pizzaAmont));
+            recipeTypeAndAmountsForOrder.Add((recipeDtoForPizzaType, pizzaAmont));
         }
 
         List<(StockType stockType, int stockAmount)> stocksAndTheirAmounts = new List<(StockType stockType, int stockAmount)>();
 
-        foreach (var item in recipeTypeAndAmountsInOrder)
+        foreach (var item in recipeTypeAndAmountsForOrder)
         {
             foreach(var stockDto in item.type.Ingredients) 
             {
