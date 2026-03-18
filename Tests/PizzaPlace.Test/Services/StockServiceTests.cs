@@ -1,12 +1,50 @@
-﻿namespace PizzaPlace.Test.Services;
+﻿using PizzaPlace.Models;
+using PizzaPlace.Models.Types;
+using PizzaPlace.Repositories;
+using PizzaPlace.Services;
+
+namespace PizzaPlace.Test.Services;
 
 [TestClass]
 public class StockServiceTests
 {
     [TestMethod]
-    public void FailingTest()
+    public async Task TestGetStock()
     {
+        // Arrange
+        var mockStockRepo = new Mock<IStockRepository>();
+        var mockRecipeService = new Mock<IRecipeService>();
+        var service = new StockService(mockStockRepo.Object, mockRecipeService.Object);
+
+        ComparableList<StockDto> ingredients1 = new ComparableList<StockDto>()
+        {
+            new StockDto(StockType.Tomatoes, 3 ),
+            new StockDto(StockType.Bacon, 4)
+        };
+        ComparableList<StockDto> ingredients2 = new ComparableList<StockDto>()
+        {
+            new StockDto(StockType.Tomatoes, 3 ),
+            new StockDto(StockType.Bacon, 4)
+        };
+
+        ComparableList<PizzaRecipeDto> pizzaRecipeDtos = new ComparableList<PizzaRecipeDto>() {
+        new PizzaRecipeDto(PizzaRecipeType.RarePizza, ingredients1, 15, 1),
+        new PizzaRecipeDto(PizzaRecipeType.EmptyPizza, ingredients2, 15, 2)
+        };
+
+        PizzaOrder order = new PizzaOrder(new ComparableList<PizzaAmount>() {
+        new PizzaAmount(PizzaRecipeType.RarePizza, 2),
+        new PizzaAmount(PizzaRecipeType.EmptyPizza, 3)
+        });
+
+        // Act
+        ComparableList<StockDto> result = await service.GetStock(order, pizzaRecipeDtos);
+
         // Assert
-        Assert.IsFalse(true);
+        Assert.AreEqual(StockType.Tomatoes, result.First().StockType);
+        Assert.AreEqual(15, result.First().Amount);
+        Assert.AreEqual(StockType.Bacon, result.Skip(1).First().StockType);
+        Assert.AreEqual(20, result.Skip(1).First().Amount);
+
     }
 }

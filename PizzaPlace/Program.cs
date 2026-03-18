@@ -42,6 +42,7 @@ services.AddTransient<IRecipeService, RecipeService>();
 services.AddTransient<IOrderingService, OrderingService>();
 services.AddTransient<IMenuService, MenuService>();
 
+
 var app = builder.Build();
 
 app.UseOpenApi();

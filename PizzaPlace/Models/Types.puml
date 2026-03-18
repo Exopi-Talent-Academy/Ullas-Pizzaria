@@ -1,0 +1,48 @@
+@startuml
+
+class PizzaOrder {
+    +RequestedOrder: ComparableList<PizzaAmount>
+}
+
+class PizzaAmount {
+    +PizzaType: PizzaRecipeType
+    +Amount: ushort
+}
+
+class PizzaRecipeDto {
+    +RecipeType: PizzaRecipeType
+    +Ingredients: ComparableList<StockDto>
+    +Price: int
+    +Id: long
+}
+
+class StockDto {
+    +StockType: StockType
+    +Amount: int
+    +Id: long
+}
+
+enum PizzaRecipeType {
+    StandardPizza
+    ExtremelyTastyPizza
+    OddPizza
+    RarePizza
+    HorseRadishPizza
+    EmptyPizza
+}
+
+enum StockType {
+    Dough
+    Tomatoes
+    GratedCheese
+    GenericSpices
+    FermentedDough
+    RottenTomatoes
+    UngenericSpices
+    Bacon
+}
+
+PizzaOrder *-- PizzaAmount
+PizzaRecipeDto *-- StockDto
+
+@enduml
