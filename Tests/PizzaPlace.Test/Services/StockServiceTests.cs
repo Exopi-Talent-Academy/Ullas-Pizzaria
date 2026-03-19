@@ -89,8 +89,8 @@ public class StockServiceTests
             };
 
         var mockStockRepo = new Mock<IStockRepository>();
-        //mockStockRepo.Setup(m => m.GetAllStock())
-        //    .ReturnsAsync(allStock);
+        mockStockRepo.Setup(m => m.GetAllStock())
+            .ReturnsAsync(allStock);
 
         var mockRecipeService = new Mock<IRecipeService>();
         var service = new StockService(mockStockRepo.Object, mockRecipeService.Object);

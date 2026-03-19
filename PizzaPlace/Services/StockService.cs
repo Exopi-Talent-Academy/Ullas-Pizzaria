@@ -5,8 +5,10 @@ using PizzaPlace.Repositories;
 namespace PizzaPlace.Services;
 public class StockService(IStockRepository stockRepository, IRecipeService recipeService) : IStockService
 {
-    private async Task<ComparableList<PizzaRecipeDto>> GetrecipeDtos(PizzaOrder order) => await recipeService.GetPizzaRecipes(order);
-    public async Task<bool> HasInsufficientStock(PizzaOrder order, ComparableList<PizzaRecipeDto> recipeDtos)
+    private async Task<ComparableList<PizzaRecipeDto>> GetrecipeDtos(PizzaOrder order) => 
+        await recipeService.GetPizzaRecipes(order);
+    public async Task<bool> HasInsufficientStock(PizzaOrder order, 
+        ComparableList<PizzaRecipeDto> recipeDtos)
     {
         bool result = false;    
         var requiredStock = await CalculateRequiredStock(order, recipeDtos);
