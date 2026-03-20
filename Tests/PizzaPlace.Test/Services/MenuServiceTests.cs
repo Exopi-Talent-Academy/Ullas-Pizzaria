@@ -19,13 +19,13 @@ namespace PizzaPlace.Test.Services
         [DataRow(10, 59, "StandardMenu")]
         [DataRow(14,0,  "LunchMenu")]
         [DataRow(14, 1, "StandardMenu")]
-        public void TestGetmenu(int hour, int minute, string expMenuTitle)
+        public void TestGetMenu(int hour, int minute, string expMenuTitle)
         {
             // Arrange
             var menuOrchestrator = new MenuOrchestrator();
             var service = new MenuService(menuOrchestrator);            
 
-            var lunchMenu = ("LunchMenu", new ComparableList<MenuItem>() { 
+            var lunchMenu = ("LunchMenu", new ComparableList<MenuItem>() {    /// Jeg er klar over, at denne menu ikke bruges... men jeg forstod på en af de først opg, at jeg skulle lave den... og nu gemmer jeg den til db implemtationen.
                 new MenuItem("Pizza1", PizzaRecipeType.RarePizza, 130.00d, false),
                 new MenuItem("Pizza2", PizzaRecipeType.OddPizza, 146.00d, false),
                 new MenuItem("Pizza3", PizzaRecipeType.ExtremelyTastyPizza, 140.00d, false),
@@ -62,13 +62,23 @@ namespace PizzaPlace.Test.Services
 
             // Assert
             Assert.AreEqual(expMenuTitle, menuTitle);
-
-
         }
 
+        [TestMethod]
+        public void TestGetmenu_ExceptionCases()
+        {
+            // Arrange
+            var menuOrchestratorMock = new Mock<IMenuOrchestrator>();
+            menuOrchestratorMock.Setup(x => x.ChooseMenuTitle(It.IsAny<int>(), It.IsAny<int>()))
+                .Returns((Menu?)null);
 
+            var service = new MenuService(menuOrchestratorMock.Object);
+            var menuDate = new DateTimeOffset(DateTime.Now);
 
-        
+            // Act and Assert
+            Assert.ThrowsException<InvalidOperationException>(() => service.GetMenu(menuDate));
+
+        }
     }
 
     
