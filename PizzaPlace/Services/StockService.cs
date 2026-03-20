@@ -5,14 +5,12 @@ using PizzaPlace.Repositories;
 namespace PizzaPlace.Services;
 public class StockService(IStockRepository stockRepository, IRecipeService recipeService) : IStockService
 {
-    private async Task<ComparableList<PizzaRecipeDto>> GetrecipeDtos(PizzaOrder order) => 
-        await recipeService.GetPizzaRecipes(order);
-    public async Task<bool> HasInsufficientStock(PizzaOrder order, 
+    public async Task<bool> HasSufficientStockForOrder(PizzaOrder order, 
         ComparableList<PizzaRecipeDto> recipeDtos)
     {
         bool result = false;    
         var requiredStock = await CalculateRequiredStock(order, recipeDtos);
-        var allStock = await GetAllStock();
+        var allStock = await GetAllStockAsync();
         foreach (var required in requiredStock)
         {
             foreach (var allItem in allStock)
@@ -20,7 +18,7 @@ public class StockService(IStockRepository stockRepository, IRecipeService recip
                 if (required.StockType == allItem.StockType)
                 {
                     var comparison = allItem.Amount - required.Amount;
-                    result = comparison < 0 ? false : true;
+                    result = comparison > 0;
                     if (result == false)
                         break;
                 }
@@ -28,43 +26,56 @@ public class StockService(IStockRepository stockRepository, IRecipeService recip
         } return result;
     }
 
-    public async Task<ComparableList<StockDto>> GetAllStock() 
+    public async Task<ComparableList<StockDto>> GetAllStockAsync() 
     {
-        return await stockRepository.GetAllStock();
+        return await stockRepository.GetAllStockAsync();
     }
 
     public async Task<ComparableList<StockDto>> CalculateRequiredStock(PizzaOrder order, ComparableList<PizzaRecipeDto> recipeDtos)
     {
-        ComparableList<(PizzaRecipeDto type, int pizzaAmount)> recipeTypeAndAmountsForOrder = new ComparableList<(PizzaRecipeDto type, int pizzaAmount)>();
+        ComparableList<(PizzaRecipeDto type, int pizzaAmount)> recipeTypeAndAmountsForOrder = [];
          
         foreach (var orderItem in order.RequestedOrder)
         {
-            var recipeDtoForPizzaType= recipeDtos.FirstOrDefault(rDto => rDto.RecipeType == orderItem.PizzaType);
-            var pizzaAmont = orderItem.Amount;
+            var recipeDtoForPizzaType = recipeDtos.FirstOrDefault(rDto => rDto.RecipeType == orderItem.PizzaType)
+                ?? throw new InvalidOperationException();
+            var pizzaAmount = orderItem.Amount;
 
-            recipeTypeAndAmountsForOrder.Add((recipeDtoForPizzaType, pizzaAmont));
+            recipeTypeAndAmountsForOrder.Add((recipeDtoForPizzaType, pizzaAmount));
         }
 
-        List<(StockType stockType, int stockAmount)> stocksAndTheirAmounts = new List<(StockType stockType, int stockAmount)>();
+        List<(StockType stockType, int stockAmount)> stocksAndTheirAmounts = [];
 
-        foreach (var item in recipeTypeAndAmountsForOrder)
+        foreach (var (type, pizzaAmount) in recipeTypeAndAmountsForOrder)
         {
-            foreach(var stockDto in item.type.Ingredients) 
+            foreach(var stockDto in type.Ingredients) 
             {
                 var existing = stocksAndTheirAmounts.FirstOrDefault(s => s.stockType == stockDto.StockType);
                 if (existing == default)
                 {
-                    stocksAndTheirAmounts.Add((stockDto.StockType, (stockDto.Amount * item.pizzaAmount)));
+                    stocksAndTheirAmounts.Add((stockDto.StockType, (stockDto.Amount * pizzaAmount)));
                 }
                 else
                 {
                     stocksAndTheirAmounts.Remove(existing);                    
-                    stocksAndTheirAmounts.Add((existing.stockType, (existing.stockAmount + (stockDto.Amount * item.pizzaAmount))));
+                    stocksAndTheirAmounts.Add((existing.stockType, existing.stockAmount + stockDto.Amount * pizzaAmount));
                 }
             }      
         }
-
         return stocksAndTheirAmounts.Select(s => new StockDto(s.stockType, s.stockAmount)).ToComparableList();
        
+    }
+
+    public async Task<ComparableList<StockType>> ReturnStocksForReordering()
+    {
+        ComparableList<StockType> stocksToReorder = [];
+
+        var allStocks = await GetAllStockAsync();
+        foreach (var stockDto in allStocks) 
+        {
+            if(stockDto.Amount < 5)
+                stocksToReorder.Add(stockDto.StockType);
+        }
+        return stocksToReorder;
     }
 }

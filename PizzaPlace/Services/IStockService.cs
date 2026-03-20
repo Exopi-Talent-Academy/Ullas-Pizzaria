@@ -1,12 +1,15 @@
 ﻿using PizzaPlace.Models;
+using PizzaPlace.Models.Types;
 
 namespace PizzaPlace.Services;
 
 public interface IStockService
 {
-    Task<bool> HasInsufficientStock(PizzaOrder order, ComparableList<PizzaRecipeDto> recipeDtos);
+    Task<bool> HasSufficientStockForOrder(PizzaOrder order, ComparableList<PizzaRecipeDto> recipeDtos);
 
     Task<ComparableList<StockDto>> CalculateRequiredStock(PizzaOrder order, ComparableList<PizzaRecipeDto> recipeDtos);
 
-    Task<ComparableList<StockDto>> GetAllStock();
+    Task<ComparableList<StockDto>> GetAllStockAsync();
+
+    Task<ComparableList<StockType>> ReturnStocksForReordering();
 }

@@ -6,7 +6,7 @@ namespace PizzaPlace.Repositories;
 public interface IStockRepository
 {
     Task<StockDto> AddToStock(StockDto stock);
-    Task<ComparableList<StockDto>> GetAllStock();
+    Task<ComparableList<StockDto>> GetAllStockAsync();
     Task<StockDto> TakeStock(StockType stockType, int amount);
     Task<StockDto> GetStockDto(StockType stockType);
 }

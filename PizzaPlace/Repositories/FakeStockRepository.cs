@@ -55,4 +55,9 @@ public class FakeStockRepository : FakeDatabase<StockDto>, IStockRepository
             return Task.FromResult(stock with { Amount = amount, Id = 0 });
         }
     }
+
+    public Task<ComparableList<StockDto>> GetAllStockAsync()
+    {
+        throw new NotImplementedException();
+    }
 }

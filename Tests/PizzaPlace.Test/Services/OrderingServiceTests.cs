@@ -53,7 +53,7 @@ public class OrderingServiceTests
 
         recipeService.Setup(x => x.GetPizzaRecipes(order))
             .ReturnsAsync(recipes);
-        stockService.Setup(x => x.HasInsufficientStock(order, recipes))
+        stockService.Setup(x => x.HasSufficientStockForOrder(order, recipes))
             .ReturnsAsync(false);
         stockService.Setup(x => x.CalculateRequiredStock(order, recipes))
             .ReturnsAsync(returnedStock);
@@ -94,7 +94,7 @@ public class OrderingServiceTests
 
         recipeService.Setup(x => x.GetPizzaRecipes(order))
             .ReturnsAsync(recipes);
-        stockService.Setup(x => x.HasInsufficientStock(order, recipes))
+        stockService.Setup(x => x.HasSufficientStockForOrder(order, recipes))
             .ReturnsAsync(true);
 
         var service = GetService(stockService.Object, recipeService.Object, pizzaOven.Object);
@@ -127,7 +127,7 @@ public class OrderingServiceTests
 
         recipeService.Setup(x => x.GetPizzaRecipes(order))
             .ReturnsAsync(recipes);
-        stockService.Setup(x => x.HasInsufficientStock(order, recipes))
+        stockService.Setup(x => x.HasSufficientStockForOrder(order, recipes))
             .ReturnsAsync(false);
         stockService.Setup(x => x.CalculateRequiredStock(order, recipes))
             .ReturnsAsync(returnedStock);

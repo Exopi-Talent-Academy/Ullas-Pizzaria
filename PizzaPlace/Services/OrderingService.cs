@@ -13,7 +13,7 @@ public class OrderingService(
     public async Task<IEnumerable<Pizza>> HandlePizzaOrder(PizzaOrder order)
     {
         var recipes = await recipeService.GetPizzaRecipes(order);
-        if (await stockService.HasInsufficientStock(order, recipes))
+        if (await stockService.HasSufficientStockForOrder(order, recipes))
             throw new PizzaException("Unable to take in order. Insufficient stock.");
 
         var stock = await stockService.CalculateRequiredStock(order, recipes);
