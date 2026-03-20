@@ -2,13 +2,11 @@
 {
     public class MenuOrchestrator : IMenuOrchestrator
     {
-        private List<Menu> menus = new List<Menu>() {
-            new Menu("StandardMenu", new ComparableList<MenuItem>()),
-            new Menu("LunchMenu", new ComparableList<MenuItem>())
-        };
-
-
-
+        private readonly List<Menu> menus = [
+            new("StandardMenu", []),
+            new("LunchMenu", [])
+        ];
+        
         public Menu? ChooseMenuTitle(int hour, int minute)
         {
             var title = "StandardMenu";
@@ -21,7 +19,5 @@
 
             return menus.FirstOrDefault(m => m.Title == title);
         }
-
-
     }
 }
