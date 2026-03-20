@@ -17,11 +17,11 @@ public class StockServiceTests
         var mockRecipeService = new Mock<IRecipeService>();
         var service = new StockService(mockStockRepo.Object, mockRecipeService.Object);
 
-        ComparableList<StockDto> ingredients1 = new ComparableList<StockDto>()
-        {
+        ComparableList<StockDto> ingredients1 =
+        [
             new StockDto(StockType.Tomatoes, 3 ),
             new StockDto(StockType.Bacon, 4)
-        };
+        ];
         ComparableList<StockDto> ingredients2 = new ComparableList<StockDto>()
         {
             new StockDto(StockType.Tomatoes, 3 ),

@@ -41,6 +41,7 @@ services.AddTransient<IStockService, StockService>();
 services.AddTransient<IRecipeService, RecipeService>();
 services.AddTransient<IOrderingService, OrderingService>();
 services.AddTransient<IMenuService, MenuService>();
+services.AddTransient<IMenuOrchestrator, MenuOrchestrator>();
 
 
 var app = builder.Build();

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PizzaPlace.Services;
+using System;
 
 namespace PizzaPlace.Controllers;
 
@@ -9,6 +10,14 @@ public class MenuController(TimeProvider timeProvider, IMenuService menuService)
     [HttpGet]
     public IActionResult GetMenu()
     {
-        return Ok(menuService.GetMenu(timeProvider.GetUtcNow()));
+        try
+        {
+            return Ok(menuService.GetMenu(timeProvider.GetUtcNow()));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(ex.Message);
+        }
+
     }
 }

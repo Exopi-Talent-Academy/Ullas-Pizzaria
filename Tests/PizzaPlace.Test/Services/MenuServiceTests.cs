@@ -22,7 +22,8 @@ namespace PizzaPlace.Test.Services
         public void TestGetmenu(int hour, int minute, string expMenuTitle)
         {
             // Arrange
-            var service = new MenuService();            
+            var menuOrchestrator = new MenuOrchestrator();
+            var service = new MenuService(menuOrchestrator);            
 
             var lunchMenu = ("LunchMenu", new ComparableList<MenuItem>() { 
                 new MenuItem("Pizza1", PizzaRecipeType.RarePizza, 130.00d, false),

@@ -2,10 +2,16 @@
 
 public class MenuService : IMenuService
 {
-    MenuOrchestrator _menuOrchestrator = new MenuOrchestrator();
+    IMenuOrchestrator _menuOrchestrator = null!;
+
+    public MenuService(IMenuOrchestrator menuOrchestrator) 
+    { 
+        _menuOrchestrator = menuOrchestrator;
+    }
     public Menu GetMenu(DateTimeOffset menuDate)
     {
-        return _menuOrchestrator.ChooseMenuTitle(menuDate.Hour, menuDate.Minute);
+        return _menuOrchestrator.ChooseMenuTitle(menuDate.Hour, menuDate.Minute)
+            ?? throw new InvalidOperationException("No menu found");
     }
 }
  

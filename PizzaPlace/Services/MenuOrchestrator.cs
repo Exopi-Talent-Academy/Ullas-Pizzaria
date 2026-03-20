@@ -1,6 +1,6 @@
 ﻿namespace PizzaPlace.Services
 {
-    public class MenuOrchestrator
+    public class MenuOrchestrator : IMenuOrchestrator
     {
         private List<Menu> menus = new List<Menu>() {
             new Menu("StandardMenu", new ComparableList<MenuItem>()),
@@ -14,14 +14,14 @@
             var title = "StandardMenu";
 
             if (
-                (hour >= 11 && hour < 14)|| 
+                (hour >= 11 && hour < 14) ||
                 (hour == 14 && minute == 0)
                 )
                 title = "LunchMenu";
-            
+
             return menus.FirstOrDefault(m => m.Title == title);
         }
 
-        
+
     }
 }
