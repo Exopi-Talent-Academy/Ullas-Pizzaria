@@ -11,5 +11,7 @@ public interface IStockService
 
     Task<ComparableList<StockDto>> GetAllStockAsync();
 
-    Task<ComparableList<StockType>> ReturnStocksForReordering();
+    Task<ComparableList<StockDto>> ReturnStocksForReordering();
+
+    Task<ComparableList<StockDto>> Restock(ComparableList<StockDto> stocksToReorder);
 }

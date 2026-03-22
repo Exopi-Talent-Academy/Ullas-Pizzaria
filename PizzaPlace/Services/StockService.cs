@@ -66,16 +66,21 @@ public class StockService(IStockRepository stockRepository, IRecipeService recip
        
     }
 
-    public async Task<ComparableList<StockType>> ReturnStocksForReordering()
+    public async Task<ComparableList<StockDto>> ReturnStocksForReordering()
     {
-        ComparableList<StockType> stocksToReorder = [];
+        ComparableList<StockDto> stocksToReorder = [];
 
         var allStocks = await GetAllStockAsync();
         foreach (var stockDto in allStocks) 
         {
             if(stockDto.Amount < 5)
-                stocksToReorder.Add(stockDto.StockType);
+                stocksToReorder.Add(stockDto);
         }
         return stocksToReorder;
+    }
+
+    public Task<ComparableList<StockDto>> Restock(ComparableList<StockDto> stocksToReorder)
+    {
+        throw new NotImplementedException();
     }
 }

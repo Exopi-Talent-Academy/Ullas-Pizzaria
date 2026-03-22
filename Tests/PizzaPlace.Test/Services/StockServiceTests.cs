@@ -146,6 +146,8 @@ public class StockServiceTests
     [TestMethod]
     [DataRow(2, 6, StockType.Tomatoes, null)]
     [DataRow(6, 2, null, StockType.Bacon)]
+    [DataRow(5, 4, null, StockType.Bacon)]
+    [DataRow(4, 5, StockType.Tomatoes, null)]
     public async Task TestReturnStocksForReordering(int tomatoCount, int baconCount, StockType? expStockType1, StockType? expStockType2) 
     {
         // Arrange
@@ -165,8 +167,8 @@ public class StockServiceTests
 
         // Assert
        if(expStockType1.HasValue)
-        Assert.IsTrue(result.Contains(expStockType1.Value));
+        Assert.IsTrue(result.Contains(new StockDto(expStockType1.Value, tomatoCount)));
        if (expStockType2.HasValue)
-        Assert.IsTrue(result.Contains(expStockType2.Value));
+        Assert.IsTrue(result.Contains(new StockDto(expStockType2.Value, baconCount)));
     }
 }
