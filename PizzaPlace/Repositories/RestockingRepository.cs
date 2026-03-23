@@ -12,8 +12,9 @@ namespace PizzaPlace.Repositories
                 new(StockType.Chocolate, 100),
                 new(StockType.BellPeppers, 100)
             ];
-        public ComparableList<StockDto> GetStocks(ComparableList<StockDto> stocksToGet)
+        public async Task<ComparableList<StockDto>> GetStocksAsync(ComparableList<StockDto> stocksToGet)
         {
+            await Task.CompletedTask;
             ComparableList<StockDto> orderedStocks = new ComparableList<StockDto>();
             foreach (var stock in stocksToGet) 
             {               

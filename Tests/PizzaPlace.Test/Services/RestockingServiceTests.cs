@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using PizzaPlace.Models;
+﻿using PizzaPlace.Models;
 using PizzaPlace.Models.Types;
 using PizzaPlace.Repositories;
 using PizzaPlace.Services;
@@ -19,14 +18,14 @@ namespace PizzaPlace.Test.Services
         public async Task TestRestock(StockType type1, int type1Amount, StockType Type2, int type2Amount) 
         {
             // Arrange
-            Mock<IRestockingRepository> restockingRepoMock = new Mock<IRestockingRepository>();
+            Mock<IRestockingRepository> restockingRepoMock = new();
             ComparableList<StockDto> orderedStocks =
                 [
                     new(type1, 50),
                     new(Type2, 50)
                 ];
-            restockingRepoMock.Setup(x => x.GetStocks(It.IsAny<ComparableList<StockDto>>()))
-                .Returns(orderedStocks);    
+            restockingRepoMock.Setup(x => x.GetStocksAsync(It.IsAny<ComparableList<StockDto>>()))
+                .ReturnsAsync(orderedStocks);    
             var service = GetService(restockingRepoMock);
 
             ComparableList<StockDto> stocksToReorder =
@@ -53,10 +52,8 @@ namespace PizzaPlace.Test.Services
         {
             // Arrange
             Mock<IRestockingRepository> restockingRepoMock = new Mock<IRestockingRepository>();
-            restockingRepoMock.Setup(x => x.GetStocks(It.IsAny<ComparableList<StockDto>>()))
+            restockingRepoMock.Setup(x => x.GetStocksAsync(It.IsAny<ComparableList<StockDto>>()))
                 .Throws(new InvalidOperationException("Order problems. New Amount only: 5"));
-
-
 
             var service = GetService(restockingRepoMock);
 
@@ -67,7 +64,6 @@ namespace PizzaPlace.Test.Services
                 ];
 
             // Act and Assert
-
             var exception = await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () =>
             {
                 await service.Restock(stocksToReorder);

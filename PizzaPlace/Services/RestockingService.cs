@@ -7,7 +7,7 @@ namespace PizzaPlace.Services
     {
         public async Task<ComparableList<StockDto>> Restock(ComparableList<StockDto> stocksToReorder)
         {            
-              return restockingRepo.GetStocks(stocksToReorder);   
+              return await restockingRepo.GetStocksAsync(stocksToReorder);   
         }
     }
 }

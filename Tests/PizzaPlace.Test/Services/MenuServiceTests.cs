@@ -19,7 +19,7 @@ namespace PizzaPlace.Test.Services
         [DataRow(10, 59, "StandardMenu")]
         [DataRow(14,0,  "LunchMenu")]
         [DataRow(14, 1, "StandardMenu")]
-        public void TestGetMenu(int hour, int minute, string expMenuTitle)
+        public async Task TestGetMenu(int hour, int minute, string expMenuTitle)
         {
             // Arrange
             var menuOrchestrator = new MenuOrchestrator();
@@ -57,7 +57,7 @@ namespace PizzaPlace.Test.Services
             });
 
             // Act
-            var menu = service.GetMenu(new DateTimeOffset(2026, 3, 15, hour, minute, 0, 1, TimeSpan.FromHours(1)));
+            var menu = await service.GetMenuAsync(new DateTimeOffset(2026, 3, 15, hour, minute, 0, 1, TimeSpan.FromHours(1)));
             var menuTitle = menu.Title;
 
             // Assert
@@ -65,7 +65,7 @@ namespace PizzaPlace.Test.Services
         }
 
         [TestMethod]
-        public void TestGetmenu_ExceptionCases()
+        public async Task TestGetmenu_ExceptionCases()
         {
             // Arrange
             var menuOrchestratorMock = new Mock<IMenuOrchestrator>();
@@ -76,7 +76,7 @@ namespace PizzaPlace.Test.Services
             var menuDate = new DateTimeOffset(DateTime.Now);
 
             // Act and Assert
-            Assert.ThrowsException<InvalidOperationException>(() => service.GetMenu(menuDate));
+            await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await service.GetMenuAsync(menuDate));
 
         }
     }

@@ -56,8 +56,9 @@ public class FakeStockRepository : FakeDatabase<StockDto>, IStockRepository
         }
     }
 
-    public Task<ComparableList<StockDto>> GetAllStockAsync()
+    public async Task<ComparableList<StockDto>> GetAllStockAsync()
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return Get(_ => true).ToComparableList();
     }
 }

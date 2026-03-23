@@ -79,8 +79,9 @@ public class StockService(IStockRepository stockRepository, IRecipeService recip
         return stocksToReorder;
     }
 
-    public Task<ComparableList<StockDto>> Restock(ComparableList<StockDto> stocksToReorder)
+    public async Task<ComparableList<StockDto>> Restock(ComparableList<StockDto> stocksToReorder)
     {
+        await Task.CompletedTask;
         throw new NotImplementedException();
     }
 }

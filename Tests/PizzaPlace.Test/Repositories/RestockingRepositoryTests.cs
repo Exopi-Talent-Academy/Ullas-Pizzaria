@@ -19,7 +19,7 @@ namespace PizzaPlace.Test.Repositories
 
         [TestMethod]
         [DataRow(StockType.Tomatoes, 1, StockType.Bacon, 4, StockType.BellPeppers, 3)]
-        public void TestGetStocks(StockType stockType1, int stockType1Amount, StockType stockType2, int stockType2Amount, StockType stockType3, int stockType3Amount)
+        public async Task TestGetStocks(StockType stockType1, int stockType1Amount, StockType stockType2, int stockType2Amount, StockType stockType3, int stockType3Amount)
         
         {
             // Arrange
@@ -32,7 +32,7 @@ namespace PizzaPlace.Test.Repositories
             RestockingRepository repo = new RestockingRepository();
 
             // Act
-            var result = repo.GetStocks(stocksToReorder);
+            var result = await repo.GetStocksAsync(stocksToReorder);
 
             // Assert
             Assert.IsInstanceOfType<ComparableList<StockDto>>(result);
@@ -43,7 +43,7 @@ namespace PizzaPlace.Test.Repositories
 
         [TestMethod]
         [DataRow(StockType.Tomatoes, 1, StockType.Bacon, 4, StockType.BellPeppers, 3)]
-        public void TestGetStocks_ExceptionCases(StockType stockType1, int stockType1Amount, StockType stockType2, int stockType2Amount, StockType stockType3, int stockType3Amount)
+        public async Task TestGetStocks_ExceptionCases(StockType stockType1, int stockType1Amount, StockType stockType2, int stockType2Amount, StockType stockType3, int stockType3Amount)
 
         {
             // Arrange
@@ -62,7 +62,7 @@ namespace PizzaPlace.Test.Repositories
             ];
 
             // Act And Assert
-            var ex = Assert.ThrowsException<InvalidOperationException>( () => repo.GetStocks(stocksToReorder));
+            var ex = await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await repo.GetStocksAsync(stocksToReorder));
             Assert.IsTrue(ex.Message.Contains("Order problems"));
             
 
