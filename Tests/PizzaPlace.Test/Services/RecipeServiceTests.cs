@@ -63,7 +63,50 @@ public class RecipeServiceTests
             Assert.AreEqual(dto.RecipeType, createdDto.RecipeType);
             Assert.AreEqual(dto.Ingredients[0].StockType, createdDto.Ingredients[0].StockType);
         }
-            
+    }
+
+    [TestMethod]
+    public async Task TestPutRecipe() 
+    {
+        // Arrange
+        var updatedDto = new PizzaRecipeDto(PizzaRecipeType.RarePizza, [new StockDto(StockType.UnicornDust, 1)], 1, 1);
+        var updatedDtoMock = new PizzaRecipeDto(PizzaRecipeType.RarePizza, [new StockDto(StockType.UnicornDust, 1)], 2, 1);
+        Mock<IRecipeRepository> recipeRepository = new Mock<IRecipeRepository>();
+        recipeRepository.Setup(x => x.UpdateRecipe(updatedDto))
+            .ReturnsAsync(updatedDtoMock);
+        var service = GetService(recipeRepository);
+
+        // Act
+        var result = await service.PutRecipe(updatedDto);
+        var resultObject = (OkObjectResult)result;
+        var resultDto = (PizzaRecipeDto)resultObject.Value;
+
+        // Assert
+        Assert.IsNotNull(resultDto);
+        Assert.AreEqual(2, resultDto.CookingTimeMinutes);
+    }
+
+    [TestMethod]
+    public async Task TestPutRecipe_ExceptionCases()
+    {
+        // Arrange
+        var updatedDto = new PizzaRecipeDto(PizzaRecipeType.RarePizza, [new StockDto(StockType.UnicornDust, 1)], 1, 1);
+        //var updatedDtoMock = new PizzaRecipeDto(PizzaRecipeType.RarePizza, [new StockDto(StockType.UnicornDust, 1)], 2, 1);
+        Mock<IRecipeRepository> recipeRepository = new Mock<IRecipeRepository>();
+        recipeRepository.Setup(x => x.UpdateRecipe(updatedDto))
+            .ThrowsAsync(new Exception("Could not update"));
+        var exMessage = "Could not update";
+        var service = GetService(recipeRepository);
+
+        // Act
+        var result = await service.PutRecipe(updatedDto);
+        var resultObject = (BadRequestObjectResult)result;
+        var message = resultObject.Value.ToString(); 
+        
+        // Assert
+        Assert.IsNotNull(resultObject);
+        Assert.AreEqual(exMessage, message);
+        
     }
 
 }

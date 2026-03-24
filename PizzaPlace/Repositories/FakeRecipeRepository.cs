@@ -55,5 +55,8 @@ public class FakeRecipeRepository : FakeDatabase<PizzaRecipeDto>, IRecipeReposit
         ];
     }
 
-    
+    public Task<PizzaRecipeDto> UpdateRecipe(PizzaRecipeDto updatedDto)
+    {
+        throw new NotImplementedException();
+    }
 }

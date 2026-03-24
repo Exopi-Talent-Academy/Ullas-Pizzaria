@@ -29,8 +29,16 @@ public class RecipeService(IRecipeRepository recipeRepository) : IRecipeService
         return new CreatedResult($"api/recipe/{resultDto.Id}", resultDto);        
     }
 
-    public Task<IActionResult> PutRecipe(PizzaRecipeDto updatedDto)
+    public async Task<IActionResult> PutRecipe(PizzaRecipeDto updatedDto)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await recipeRepository.UpdateRecipe(updatedDto);
+            return new OkObjectResult(result);
+        }
+        catch (Exception ex)
+        {
+            return new BadRequestObjectResult(ex.Message);
+        }
     }
 }
