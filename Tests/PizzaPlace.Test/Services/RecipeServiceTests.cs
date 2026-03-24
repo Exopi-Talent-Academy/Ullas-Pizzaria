@@ -1,4 +1,5 @@
-﻿using PizzaPlace.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using PizzaPlace.Models;
 using PizzaPlace.Models.Types;
 using PizzaPlace.Repositories;
 using PizzaPlace.Services;
@@ -38,4 +39,31 @@ public class RecipeServiceTests
         // Assert
         Assert.AreEqual(expected, actual);
     }
+
+    [TestMethod]
+    public async Task TestPostRecipe() 
+    {
+        // Arrange
+        var dto = new PizzaRecipeDto(PizzaRecipeType.RarePizza, [new StockDto(StockType.UnicornDust, 1)], 1);
+        var createdDtoMock = new PizzaRecipeDto(PizzaRecipeType.RarePizza, [new StockDto(StockType.UnicornDust, 1)], 1, 1);
+        Mock<IRecipeRepository> recipeRepository = new Mock<IRecipeRepository>();
+        recipeRepository.Setup(x => x.AddRecipe(dto))
+            .ReturnsAsync(createdDtoMock); 
+        var service = GetService(recipeRepository);
+
+        // Act
+        var result = await service.PostRecipe(dto);
+        var createdResult = (CreatedResult)result;
+        
+        // Assert       
+        Assert.IsNotNull(createdResult);
+        if (createdResult.Value is PizzaRecipeDto createdDto) 
+        {
+            Assert.AreNotEqual(0, createdDto.Id);
+            Assert.AreEqual(dto.RecipeType, createdDto.RecipeType);
+            Assert.AreEqual(dto.Ingredients[0].StockType, createdDto.Ingredients[0].StockType);
+        }
+            
+    }
+
 }

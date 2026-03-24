@@ -7,7 +7,7 @@ public class FakeRecipeRepository : FakeDatabase<PizzaRecipeDto>, IRecipeReposit
 {
     private static readonly object _lock = new();
 
-    public Task<long> AddRecipe(PizzaRecipeDto recipe)
+    public Task<PizzaRecipeDto> AddRecipe(PizzaRecipeDto recipe)
     {
         lock (_lock)
         {
@@ -15,9 +15,11 @@ public class FakeRecipeRepository : FakeDatabase<PizzaRecipeDto>, IRecipeReposit
                 throw new PizzaException($"Recipe already added for {recipe.RecipeType}.");
 
             var id = Insert(recipe);
-            return Task.FromResult(id);
+            return Task.FromResult(new PizzaRecipeDto(recipe.RecipeType, recipe.Ingredients, recipe.CookingTimeMinutes, id));           
         }
     }
+
+    
 
     public Task<PizzaRecipeDto> GetRecipe(PizzaRecipeType recipeType)
     {
@@ -52,4 +54,6 @@ public class FakeRecipeRepository : FakeDatabase<PizzaRecipeDto>, IRecipeReposit
             ], 10),
         ];
     }
+
+    
 }

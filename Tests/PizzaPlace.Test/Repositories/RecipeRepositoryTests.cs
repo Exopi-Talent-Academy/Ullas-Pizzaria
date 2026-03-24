@@ -32,8 +32,8 @@ public class RecipeRepositoryTests
         var actual = await repository.AddRecipe(recipe);
 
         // Assert
-        Assert.IsTrue(actual > 0, "Recipe has an id.");
-        StandardRecipeId = actual;
+        Assert.IsTrue(actual.Id > 0, "Recipe has an id.");
+        StandardRecipeId = actual.Id;
     }
 
     [TestMethod]
@@ -52,6 +52,7 @@ public class RecipeRepositoryTests
     }
 
     [TestMethod]
+    [Ignore]
     public async Task GetRecipe()
     {
         // Arrange

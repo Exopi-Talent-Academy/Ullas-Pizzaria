@@ -1,4 +1,5 @@
-﻿using PizzaPlace.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using PizzaPlace.Models;
 using PizzaPlace.Repositories;
 
 namespace PizzaPlace.Services;
@@ -19,5 +20,12 @@ public class RecipeService(IRecipeRepository recipeRepository) : IRecipeService
         }
 
         return recipes;
+    }
+
+    public async Task<IActionResult> PostRecipe(PizzaRecipeDto dto) 
+    {
+        ArgumentNullException.ThrowIfNull(dto);       
+        var resultDto = await recipeRepository.AddRecipe(dto);
+        return new CreatedResult($"api/recipe/{resultDto.Id}", resultDto);        
     }
 }
