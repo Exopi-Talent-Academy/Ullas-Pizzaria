@@ -7,4 +7,5 @@ public interface IRecipeService
 {
     Task<ComparableList<PizzaRecipeDto>> GetPizzaRecipes(PizzaOrder order);
     Task<IActionResult> PostRecipe(PizzaRecipeDto dto);
+    Task<IActionResult> PutRecipe(PizzaRecipeDto updatedDto);
 }

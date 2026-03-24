@@ -25,5 +25,20 @@ namespace PizzaPlace.Controllers
             
         }
 
+        public async Task<IActionResult> PutRecipe(PizzaRecipeDto updatedDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid input");
+            }
+            try
+            {
+                return await service.PutRecipe(updatedDto);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

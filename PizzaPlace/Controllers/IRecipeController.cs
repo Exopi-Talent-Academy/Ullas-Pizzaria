@@ -7,5 +7,6 @@ namespace PizzaPlace.Controllers
     {
         
         Task<IActionResult> PostRecipe(PizzaRecipeDto dto);
+        Task<IActionResult> PutRecipe(PizzaRecipeDto updatedDto);
     }
 }
