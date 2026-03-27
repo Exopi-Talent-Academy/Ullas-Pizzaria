@@ -81,4 +81,38 @@ public class RecipeRepositoryTests
         // Assert
         Assert.AreEqual("Recipe does not exists of type ExtremelyTastyPizza.", ex.Message);
     }
+
+    [TestMethod]
+    public async Task TestUpdateRecipe() 
+    {
+        // Arrange
+        var repo = GetRecipeRepository();
+        var dto = new PizzaRecipeDto(PizzaRecipeType.RarePizza, [new StockDto(StockType.UnicornDust, 1)], 1, 1);
+        var updatedDto = new PizzaRecipeDto(PizzaRecipeType.RarePizza, [new StockDto(StockType.UnicornDust, 1)], 30, 1);
+        await repo.AddRecipe(dto);  
+
+        // Act
+        var result = await repo.UpdateRecipe(updatedDto);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(30, result.CookingTimeMinutes);
+    }
+
+    [TestMethod]
+    public async Task TestUpdateRecipe_ExceptionCases()
+    {
+        // Arrange
+        var repo = GetRecipeRepository();
+        var recipe = await repo.GetRecipe(PizzaRecipeType.RarePizza);
+        if (recipe != null)
+            await repo.DeleteRecipe(recipe);
+        //await repo.AddRecipe(new PizzaRecipeDto(PizzaRecipeType.RarePizza, [new StockDto(StockType.UnicornDust, 1)], 1, 1));        
+        var updatedDto = new PizzaRecipeDto(PizzaRecipeType.RarePizza, [new StockDto(StockType.UnicornDust, 1)], 30, 2);        
+
+        // Act and Assert
+        var ex = await Assert.ThrowsExceptionAsync<PizzaException>(() => repo.UpdateRecipe(updatedDto));
+        var message = ex.Message;
+        Assert.IsTrue(message.Contains("recipetype"));
+    }
 }

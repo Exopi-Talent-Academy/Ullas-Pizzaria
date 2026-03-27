@@ -15,16 +15,24 @@ public class FakeRecipeRepository : FakeDatabase<PizzaRecipeDto>, IRecipeReposit
                 throw new PizzaException($"Recipe already added for {recipe.RecipeType}.");
 
             var id = Insert(recipe);
-            return Task.FromResult(new PizzaRecipeDto(recipe.RecipeType, recipe.Ingredients, recipe.CookingTimeMinutes, id));           
+            return Task.FromResult(new PizzaRecipeDto(recipe.RecipeType, recipe.Ingredients, recipe.CookingTimeMinutes, id));
         }
     }
 
-    
+    public Task DeleteRecipe(PizzaRecipeDto recipe)
+    {
+        var recipeItem = Get(x => x.Id == recipe.Id);
+        if (recipeItem == null)
+            throw new PizzaException("Recipe not found");
+        Delete(recipe.Id);
+        return Task.CompletedTask;
+    }
 
-    public Task<PizzaRecipeDto> GetRecipe(PizzaRecipeType recipeType)
+
+        public Task<PizzaRecipeDto?> GetRecipe(PizzaRecipeType recipeType)
     {
         var recipe = Get(x => x.RecipeType == recipeType)
-            .FirstOrDefault() ?? throw new PizzaException($"Recipe does not exists of type {recipeType}.");
+            .FirstOrDefault() ?? null;
 
         return Task.FromResult(recipe);
     }
@@ -55,8 +63,12 @@ public class FakeRecipeRepository : FakeDatabase<PizzaRecipeDto>, IRecipeReposit
         ];
     }
 
-    public Task<PizzaRecipeDto> UpdateRecipe(PizzaRecipeDto updatedDto)
+    public async Task<PizzaRecipeDto> UpdateRecipe(PizzaRecipeDto updatedDto)
     {
-        throw new NotImplementedException();
+        var type = updatedDto.RecipeType;
+        var outdatedRecipe = await GetRecipe(type);
+        return outdatedRecipe == null
+            ? throw new PizzaException("Could not find that recipetype in database")
+            : new PizzaRecipeDto(updatedDto.RecipeType, updatedDto.Ingredients, updatedDto.CookingTimeMinutes, updatedDto.Id);
     }
 }

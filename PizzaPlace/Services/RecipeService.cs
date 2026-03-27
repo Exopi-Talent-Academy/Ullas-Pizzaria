@@ -16,9 +16,10 @@ public class RecipeService(IRecipeRepository recipeRepository) : IRecipeService
         ComparableList<PizzaRecipeDto> recipes = [];
         foreach (var pizzaType in pizzaTypes)
         {
-            recipes.Add(await recipeRepository.GetRecipe(pizzaType));
+            var recipe = await recipeRepository.GetRecipe(pizzaType);
+            if (recipe != null)
+                recipes.Add(recipe);
         }
-
         return recipes;
     }
 
